@@ -24,6 +24,10 @@ Author URI:
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */ 
 
+define("ACF_KEY_DEAL_URL", "field_526440b01e452");
+define("ACF_KEY_DEAL_DEALEXP", "field_526c28fddb7cc");
+define("ACF_KEY_DEAL_CODES", "field_527bb9710e6cb");
+
 // Start up the engine 
 add_action('admin_menu', 'sample_posts_menu');
 
@@ -32,31 +36,65 @@ function sample_posts_menu() {
 	add_menu_page( 'TMT Sample Content', 'TMT Sample Content', 'activate_plugins', 'tmt-sample-content', 'sample_posts_options', '');
 }
 
+function getMessage($state) {
+	$message['added'] = '<div class="updated below-h2" id="message"><p>Sample Post Bundle Added!</p></div>';
+	$message['removed'] = '<div class="updated below-h2" id="message"><p>All Sample Posts Removed!</p></div>';
+	return $message[$state];
+}
+
+function getAddButton () {
+	return '<a href="?page=tmt-sample-content&amp;add_bundle=true" class="button">Add Bundle of Sample Posts</a>';
+}
+
+function getRemoveButton () {
+	return '<a href="?page=tmt-sample-content&amp;remove_all=true" class="button">Remove All Sample Posts</a>';
+}
+
+function getDealPostContent() {
+	return [
+		'post_title'	=> 'A sample deal post',
+		'post_content'	=> '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
+		'post_status'	=> 'publish',
+		'post_type'		=> "tmt-deal-posts",
+	];
+}
+
+function addDealCustomFields($postId) {
+	//http://www.advancedcustomfields.com/resources/functions/update_field/
+	update_field(ACF_KEY_DEAL_URL, "http://some.url.com", $postId);
+	update_field(ACF_KEY_DEAL_DEALEXP, "20141231", $postId);
+	
+	$codes[] = [
+		"code"				=> "code1",
+		"description"		=> "code1 description",
+		"expiration_date"	=> "20141231",
+		"acf_fc_layout"		=> "codes",
+	];
+	$codes[] = [
+		"code"				=> "code2",
+		"description"		=> "code2 description",
+		"expiration_date"	=> "20141231",
+		"acf_fc_layout"		=> "codes",
+	];
+
+	update_field(ACF_KEY_DEAL_CODES, $codes, $postId);
+
+}
+
 // Define new menu page content
 function sample_posts_options() {
 	if (!current_user_can('manage_options'))  {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	} else {
+		$output = "";
 		if ($_GET["add_bundle"] == true){
-			echo '<div class="updated below-h2" id="message">
-					<p>Sample Post Bundle Added!</p>
-				</div>';
+			$output .= getMessage("added");
 		} elseif ($_GET["remove_all"] == true){;
-			echo '<div class="updated below-h2" id="message">
-                <p>All Sample Posts Removed!</p>
-            </div>';
+			$output .= getMessage("removed");
         };
 	
-		echo '<a href="?page=tmt-sample-content&amp;add_bundle=true" class="button">Add Bundle of Sample Posts</a>';
-		echo '<a href="?page=tmt-sample-content&amp;remove_all=true" class="button">Remove All Sample Posts</a>';
-		
-		
-		$postContent = [
-			'post_title'	=> 'Multiple Paragraph Post',
-			'post_content'	=> '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
-			'post_status'	=> 'publish',
-			'post_type'		=> "tmt-deal-posts",
-		];
+		$output .= getAddButton ();
+		$output .= getRemoveButton ();
 		
 		$postCustom = [
 		];
@@ -64,12 +102,12 @@ function sample_posts_options() {
 		
 		if ($_GET["add_bundle"] == true){
 			global $wpdb;
-			$postId = wp_insert_post( $postContent );
-			// update_field($field_key, $value, $post_id)
-			//http://www.advancedcustomfields.com/resources/functions/update_field/
+			$postId = wp_insert_post( getDealPostContent() );
+			addDealCustomFields($postId);
+			$output .= "<li><a href='http://localhost/development/wordpress/wp-admin/post.php?post=$postId&action=edit'>$postId</a></li>";
 		};
-
 	}
+	echo $output;
 }
 		
 
