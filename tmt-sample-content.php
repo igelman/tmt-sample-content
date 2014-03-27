@@ -36,78 +36,47 @@ function sample_posts_menu() {
 function sample_posts_options() {
 	if (!current_user_can('manage_options'))  {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
-	} else { 
-
-		?>
-	
-    <!-- Output for Plugin Options Page -->
-	<div class="wrap">
-        <h2 id="">Sample Post Generator</h2>
-
-        <?php if ($_GET["add_bundle"] == true){ ?>
-            <div class="updated below-h2" id="message">
-                <p>Sample Post Bundle Added!</p>
-            </div>
-        <?php } elseif ($_GET["remove_all"] == true){;?>
-            <div class="updated below-h2" id="message">
+	} else {
+		if ($_GET["add_bundle"] == true){
+			echo '<div class="updated below-h2" id="message">
+					<p>Sample Post Bundle Added!</p>
+				</div>';
+		} elseif ($_GET["remove_all"] == true){;
+			echo '<div class="updated below-h2" id="message">
                 <p>All Sample Posts Removed!</p>
-            </div>
-        <?php }; // endif ?> 
-
-        <p>Add and remove sample TMT post content.</p><br>
-
-        <h3 id="">Add A Bundle Of Sample Posts</h3>
-        <p>Here, you can add the complete bundle of example posts & pages. These posts are:</p>
-        <ol>
-            <li>Multiple Paragraph Posts</li>
-            <li>Image Post</li>
-            <li>UL and OL Post</li>
-            <li>Blockquote Post</li>
-            <li>Post with links</li>
-            <li>Post with Header tags H1 through H5</li>
-        </ol>
-		<p>In addition to the example posts, the bundle includes 5 pages, a child page, and a grandchild page, to assist with styling menus and navigation.</p>
-        <a href="?page=tmt-sample-content&amp;add_bundle=true" class="button">Add Bundle of Sample Posts</a>
-        <br><br><br>
-
-        <h3 id="">Remove All Posts</h3>
-        <p>Here, you can remove all example posts that you've created with the plugin, in one fell swoop. That easy? Oh yeah.</p>
-        <a href="?page=tmt-sample-content&amp;remove_all=true" class="button">Remove All Sample Posts</a>
-	</div>
-	<!-- End Output for Plugin Options Page -->
+            </div>';
+        };
 	
-<?php 
+		echo '<a href="?page=tmt-sample-content&amp;add_bundle=true" class="button">Add Bundle of Sample Posts</a>';
+		echo '<a href="?page=tmt-sample-content&amp;remove_all=true" class="button">Remove All Sample Posts</a>';
+		
+		
+		$postContent = [
+			'post_title'	=> 'Multiple Paragraph Post',
+			'post_content'	=> '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
+			'post_status'	=> 'publish',
+			'post_type'		=> "tmt-deal-posts",
+		];
+		
+		$postCustom = [
+		];
 
-	// Add Posts -------------------------
-	if ($_GET["add_bundle"] == true){
-		global $wpdb;
-	    // Get content for all posts and pages, then insert posts
-	    include 'content.php';
-	    foreach ($add_posts_array as $post){
-	        wp_insert_post( $post );
-	    };
 		
-		// Add Child Page
-		$page_name = 'Image Page';
-		$page_name_id = $wpdb->get_results("SELECT ID FROM " . $wpdb->base_prefix . "posts WHERE post_title = '". $page_name ."'");
-        foreach($page_name_id as $page_name_id){
-        	$imagepageid = $page_name_id->ID;
-			include 'content.php';
-        	wp_insert_post( $childpage );
-        };
+		if ($_GET["add_bundle"] == true){
+			global $wpdb;
+			$postId = wp_insert_post( $postContent );
+			// update_field($field_key, $value, $post_id)
+			//http://www.advancedcustomfields.com/resources/functions/update_field/
+		};
+
+	}
+}
 		
-		// Add Grandchild Page
-		$page_name = 'Child Page';
-		$page_name_id = $wpdb->get_results("SELECT ID FROM " . $wpdb->base_prefix . "posts WHERE post_title = '". $page_name ."'");
-        foreach($page_name_id as $page_name_id){
-        	$childpageid = $page_name_id->ID;
-			include 'content.php';
-        	wp_insert_post( $grandchildpage );
-        };
-	};
+
 	// ---------------------------------------
 
 	//  Remove Posts -------------------------
+/*
 	if ($_GET["remove_all"] == true){
 	    // Get content for all posts and pages, then remove them
 	    include 'content.php';
@@ -121,6 +90,7 @@ function sample_posts_options() {
 	        };
 	    };
 	};
+*/
 	// ---------------------------------------
 	
-}}; ?>
+?>
