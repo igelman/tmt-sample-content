@@ -21,21 +21,21 @@ Author URI:
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    
-    
-    
-    TODO
-    + Add coupon sample content
-    + Loop to add lots of content
-    + Compute expiration date
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA    
 */ 
 
 define("N", 10);
 
+// Custom fields for Deal post type
 define("ACF_KEY_DEAL_URL", "field_526440b01e452");
 define("ACF_KEY_DEAL_DEALEXP", "field_526c28fddb7cc");
 define("ACF_KEY_DEAL_CODES", "field_527bb9710e6cb");
+
+// Custom fields for Coupon post type
+define("ACF_KEY_COUPON_URL", "field_528f9b3664db4");
+define("ACF_KEY_COUPON_CODE","field_528f9a4c64db2");
+define("ACF_KEY_COUPON_EXPIRES", "field_528f9a7764db3");
+define("ACF_KEY_COUPON_OFFERID", "field_52a49ccebf7a7");
 
 // Start up the engine 
 add_action('admin_menu', 'sample_posts_menu');
@@ -93,18 +93,33 @@ function addDealCustomFields($postId, $i) {
 }
 
 function addCouponCustomFields($postId, $i) {
-	
+	update_field(ACF_KEY_COUPON_URL, "http://some.url.com", $postId);
+	update_field(ACF_KEY_COUPON_CODE, "abc123", $postId);
+	update_field(ACF_KEY_COUPON_EXPIRES, getDateNDaysFromNow($i), $postId);
+	update_field(ACF_KEY_COUPON_OFFERID, "12345678", $postId);
 }
 
 function addDealPosts($n) {
-	$output = "<ol>";
+	$output = "<div>Deal Posts<ol>";
 	for ($i = 1; $i <= $n; $i++) {
 		$postId = wp_insert_post( getPostContent("tmt-deal-posts") );
 		addDealCustomFields($postId, $i);
 		$output .= "<li><a href='http://localhost/development/wordpress/wp-admin/post.php?post=$postId&action=edit'>$postId</a></li>";
 	}
-	$output .= "</ol>";
+	$output .= "</ol></div>";
 	return $output;
+}
+
+function addCouponPosts($n) {
+	$output = "<div>Coupon Posts<ol>";
+	for ($i = 1; $i <= $n; $i++) {
+		$postId = wp_insert_post( getPostContent("tmt-coupon-posts") );
+		addCouponCustomFields($postId, $i);
+		$output .= "<li><a href='http://localhost/development/wordpress/wp-admin/post.php?post=$postId&action=edit'>$postId</a></li>";
+	}
+	$output .= "</ol></div>";
+	return $output;
+	
 }
 
 // Define new menu page content
@@ -119,11 +134,12 @@ function sample_posts_options() {
 			$output .= getMessage("added");
 			global $wpdb;
 			$output .= addDealPosts(N);
+			$output .= addCouponPosts(N);
 		} elseif ($_GET["remove_all"] == true){;
 			$output .= getMessage("removed");
         };
 		$output .= getAddButton ();
-		$output .= getRemoveButton ();		
+		//$output .= getRemoveButton ();		
 	}
 	echo $output;
 }
