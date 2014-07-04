@@ -24,18 +24,7 @@ Author URI:
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA    
 */ 
 
-define("N", 10);
-
-// Custom fields for Deal post type
-define("ACF_KEY_DEAL_URL", "field_526440b01e452");
-define("ACF_KEY_DEAL_DEALEXP", "field_526c28fddb7cc");
-define("ACF_KEY_DEAL_CODES", "field_527bb9710e6cb");
-
-// Custom fields for Coupon post type
-define("ACF_KEY_COUPON_URL", "field_528f9b3664db4");
-define("ACF_KEY_COUPON_CODE","field_528f9a4c64db2");
-define("ACF_KEY_COUPON_EXPIRES", "field_528f9a7764db3");
-define("ACF_KEY_COUPON_OFFERID", "field_52a49ccebf7a7");
+require_once 'tmt-sample-content-config.php';
 
 // Start up the engine 
 add_action('admin_menu', 'sample_posts_menu');
@@ -65,8 +54,8 @@ function getDateNDaysFromNow($n) {
 
 function getPostContent($postType) {
 	return [
-		'post_title'	=> 'A sample deal post',
-		'post_content'	=> '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
+		'post_title'	=> 'Macy\'s 20% off All Items coupon (+ Free Shipping on $99), 25% off Sitewide coupon (+ Clearance Sale, deals from $3)',
+		'post_content'	=> 'Stock up on stylish essentials for a steal with the Warehouse Event at Land\'s End, down jackets, vests, shoes and more - plus free shipping on $50. Some picks:<ul><li>Women\'s Tops, Cardigans (from <b>$4</b>)</li><li>Snoes, Clogs, Mocs (from <b>$19</b>)</li><li>Men\'s Shirts (from <b>$6</b>)</li><li>Men\'s Pants (from <b>$12</b>)</li><li><b>View all items &gt;</b></li></ul>',
 		'post_status'	=> 'publish',
 		'post_type'		=> $postType,
 	];
